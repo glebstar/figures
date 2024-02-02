@@ -46,6 +46,13 @@ class Db
         return $connect->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Возвращает одну запись из таблицы бд
+     *
+     * @param $sql
+     * @param $bind
+     * @return false|mixed
+     */
     public static function getOne($sql, $bind=[]) {
         $connect = self::_getConnect()->prepare($sql);
         $connect->execute($bind);
@@ -58,6 +65,8 @@ class Db
     }
 
     /**
+     * Добавляет запись в таблицу бд
+     *
      * @param string $table
      * @param array $data
      * @return void

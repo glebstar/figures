@@ -78,6 +78,11 @@ class HomeController
         return json_encode(['status' => 'ok']);
     }
 
+    /**
+     * Отображает "Страница не найдена"
+     *
+     * @return bool
+     */
     public function action404(): bool
     {
         http_response_code(404);
