@@ -1,14 +1,12 @@
 let currentGroup = null;
 let cookieCurrentGroup = $.cookie('currentGroup');
-if (cookieCurrentGroup) {
+if (cookieCurrentGroup && results.length) {
     currentGroup = cookieCurrentGroup;
 }
 
 let currentFigure = null;
 let currentSize = null;
 let currentColor = null;
-let currentX = 50;
-let currentY = 50;
 
 $(document).ready(function(){
     initAcc();
@@ -21,7 +19,11 @@ $(document).ready(function(){
             }
 
             currentGroup = data.newId;
-
+            groupsCoord.push({
+                id: data.newId,
+                x: 50,
+                y: 50
+            });
             $('#accGroups').append('<div class="accordion-item"><h2 class="accordion-header" data-group-n="' + currentGroup + '"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse' + currentGroup + '" aria-expanded="false" aria-controls="collapse' + currentGroup + '">' + $('#newGroupInput').val() + '</button></h2><div id="collapse' + currentGroup + '" class="accordion-collapse collapse" data-bs-parent="#accGroups"><div class="accordion-body"><canvas id="canvas-' + currentGroup + '" width="800" height="400"></canvas></div></div></div>');
             $('#newGroupInput').val('');
             initAcc();
@@ -63,27 +65,35 @@ $(document).ready(function(){
 
 function initAcc() {
     $('.accordion-header').click(function (){
-        if ($(this).data('group-n') != currentGroup) {
-            currentX = 50;
-            currentY = 50;
-        }
         currentGroup = $(this).data('group-n');
-        $.cookie('currentGroup', currentGroup, { expires: 356 });
+        $.cookie('currentGroup', currentGroup, { expires: 30 });
     });
 
     if (currentGroup) {
         $('.accordion-collapse').removeClass('show');
         $('#collapse' + currentGroup).addClass('show');
-        $.cookie('currentGroup', currentGroup, { expires: 356 });
+        $.cookie('currentGroup', currentGroup, { expires: 30 });
     }
 }
 
 function drawFigure(currGroup, currFig, currSize, currColor) {
+    let groupCoord = null;
+
+    for (i = 0; i < groupsCoord.length; i++) {
+        if (currGroup == groupsCoord[i].id) {
+            groupCoord = groupsCoord[i];
+        }
+    }
+
+    if (!groupCoord) {
+        return false;
+    }
+
     switch (currFig) {
         case 1:
             $('#canvas-' + currGroup).drawPolygon({
                 fillStyle: currColor,
-                x: currentX, y: currentY,
+                x: groupCoord.x, y: groupCoord.y,
                 radius: currSize,
                 sides: 3
             });
@@ -91,14 +101,14 @@ function drawFigure(currGroup, currFig, currSize, currColor) {
         case 2:
             $('#canvas-' + currGroup).drawArc({
                 fillStyle: currColor,
-                x: currentX, y: currentY,
+                x: groupCoord.x, y: groupCoord.y,
                 radius: currSize
             });
             break;
         case 3:
             $('#canvas-' + currGroup).drawRect({
                 fillStyle: currColor,
-                x: currentX, y: currentY,
+                x: groupCoord.x, y: groupCoord.y,
                 width: currSize * 2,
                 height: currSize * 2
             });
@@ -107,9 +117,9 @@ function drawFigure(currGroup, currFig, currSize, currColor) {
             break;
     }
 
-    currentX = parseFloat(currentX) + (parseFloat(currentSize)*2) + 50;
-    if (currentX >= 800 - (currentSize*2)) {
-        currentX = 50;
-        currentY = parseFloat(currentY) + (parseFloat(currentSize)*2) + 50;
+    groupCoord.x = parseFloat(groupCoord.x) + (parseFloat(currentSize)*2) + 50;
+    if (groupCoord.x >= 800 - (currentSize*2)) {
+        groupCoord.x = 50;
+        groupCoord.y = parseFloat(groupCoord.y) + (parseFloat(currentSize)*2) + 50;
     }
 }

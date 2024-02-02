@@ -45,7 +45,7 @@
           <div class="accordion-item">
               <h2 class="accordion-header" data-group-n="<?=$group['id'];?>">
                   <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?=$group['id'];?>" aria-expanded="false" aria-controls="collapse<?=$group['id'];?>">
-                      <?=$group['name'];?>
+                      <?=htmlspecialchars($group['name']);?>
                   </button>
               </h2>
               <div id="collapse<?=$group['id'];?>" class="accordion-collapse collapse" data-bs-parent="#accGroups">
@@ -74,6 +74,15 @@
           figure: <?=$result['figure_id'];?>,
           size: <?=$result['size'];?>,
           color: '<?=$result['color'];?>'
+      });
+      <?php endforeach;?>
+
+      let groupsCoord = [];
+      <?php foreach ($groups as $group):?>
+      groupsCoord.push({
+         id: <?=$group['id'];?>,
+         x: 50,
+         y: 50
       });
       <?php endforeach;?>
   </script>
